@@ -4,46 +4,36 @@ import java.net.*;
 import java.io.*;
 
 
+public class UDPClient{
+	
 
-public class UDPClient {
-	Socket s;
-	int serverPort;
-	String host;
 	
-	public UDPClient(String ip, int port) {
-	    try{
-	    	this.host = ip;
-			this.serverPort = port;
-		   	this.s = new Socket(this.host, this.serverPort);
-	    } catch (UnknownHostException e){System.out.println("Sock:"+e.getMessage()); 
-	    } catch (EOFException e){ System.out.println("EOF:"+e.getMessage());
-	    } catch (IOException e){ System.out.println("IO:"+e.getMessage());}
-	}
+	public UDPClient(String host,int serverPort, String mensagem){
 	
-	public void sendRequest(String request) {
+	
+	// args give message contents and server hostname
+	DatagramSocket aSocket = null;
 		try {
-			DataOutputStream out = new DataOutputStream(s.getOutputStream());
-			out.writeUTF(request);
-		}catch(IOException e) {
-			System.out.println("IO: "+e.getMessage());
+			aSocket = new DatagramSocket();
+//			aSocket.setSoTimeout(15 * 1000); 15 segundos
+			byte [] m = mensagem.getBytes();
+			InetAddress aHost = InetAddress.getByName(host);                                    
+			DatagramPacket request = new DatagramPacket(m,  mensagem.length(), aHost, serverPort);
+			aSocket.send(request);
+			byte[] buffer = new byte[1000];
+			DatagramPacket reply = new DatagramPacket(buffer, buffer.length);	
+			aSocket.receive(reply);
+			System.out.println("Reply: " + new String(reply.getData()));	
+		} catch (SocketException e){
+			System.out.println("Socket: " + e.getMessage());
+		} catch (IOException e){
+			System.out.println("IO: " + e.getMessage());
+		} finally {
+			if(aSocket != null) {
+				aSocket.close();
+			}
 		}
+	 
 	}
 	
-	public String getResponse() {
-		try {
-			DataInputStream in = new DataInputStream(s.getInputStream());
-			return in.readUTF();
-		}catch(IOException e) {
-			System.out.println("IO: "+e.getMessage());
-			return "Erro";
-		}
-	}
-	
-	public void close() {
-		try {
-			s.close();
-		}catch(IOException e) {
-			System.out.println("IO: "+e.getMessage());
-		}
-	}
 }
