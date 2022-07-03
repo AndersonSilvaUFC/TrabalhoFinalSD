@@ -15,27 +15,41 @@ import java.net.*;
 import java.io.*;
 
 public class UDPServer{
+	DatagramSocket aSocket = null;
+	byte[] buffer = null;
+	DatagramPacket request = null;
+	DatagramPacket reply = null;
+
 	
 	public UDPServer(){
-		DatagramSocket aSocket = null;
 	    try{
 	    	aSocket = new DatagramSocket(6789);
-	    	byte[] buffer = new byte[1000];
+	    	buffer = new byte[1000];
 	 		while(true){
- 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
- 				aSocket.receive(request);
- 				DatagramPacket reply = new DatagramPacket(request.getData(), 
+ 				request = new DatagramPacket(buffer, buffer.length);
+ 				reply = new DatagramPacket(request.getData(), 
 			   	request.getLength(), request.getAddress(), request.getPort());
- 				aSocket.send(reply);
 			}
 	    } catch (SocketException e) {
 	    	System.out.println("Socket: " + e.getMessage());
-	    } catch (IOException e) {
-	    	System.out.println("IO: " + e.getMessage());
-		} finally {
+	    } 
+	}
+	
+		public byte[] getRequest() throws IOException {
+			aSocket.receive(request);
+			return null;
+		}
+		
+		public void sendResponse() throws IOException {
+			aSocket.send(reply);
+		
+		}
+		
+		public void close() {
 			if(aSocket != null) {
 				aSocket.close();
 			}
 		}
-	}
+		
+	
 }

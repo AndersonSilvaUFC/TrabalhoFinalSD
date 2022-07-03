@@ -6,22 +6,27 @@ import java.io.*;
 
 public class UDPClient{
 	
-
+	private DatagramPacket request = null;
+	private DatagramPacket reply = null;
+	private DatagramSocket aSocket = null;
+	private InetAddress aHost = null;
+	private int Port;
+	private byte[] buffer = new byte[1000];
 	
-	public UDPClient(String host,int serverPort, String mensagem){
 	
-	
-	// args give message contents and server hostname
-	DatagramSocket aSocket = null;
+	public UDPClient(String host,int serverPort){
+		
 		try {
+			Port = serverPort;
 			aSocket = new DatagramSocket();
-//			aSocket.setSoTimeout(15 * 1000); 15 segundos
-			byte [] m = mensagem.getBytes();
-			InetAddress aHost = InetAddress.getByName(host);                                    
-			DatagramPacket request = new DatagramPacket(m,  mensagem.length(), aHost, serverPort);
-			aSocket.send(request);
+			aHost = InetAddress.getByName(host);   
 			byte[] buffer = new byte[1000];
-			DatagramPacket reply = new DatagramPacket(buffer, buffer.length);	
+			reply = new DatagramPacket(buffer, buffer.length);	
+			
+			
+//			aSocket.setSoTimeout(15 * 1000); 15 segundos
+
+			
 			aSocket.receive(reply);
 			System.out.println("Reply: " + new String(reply.getData()));	
 		} catch (SocketException e){
@@ -34,6 +39,22 @@ public class UDPClient{
 			}
 		}
 	 
+	}
+	
+	byte[] getResponse() throws IOException{
+		aSocket.receive(reply);
+		return null;
+	}
+	
+	void sendRequest(byte[] mensagem) throws IOException{
+		request = new DatagramPacket(mensagem,  mensagem.length, aHost, Port);
+		aSocket.send(request);
+	}
+	
+	void close() {
+		if(aSocket != null) {
+			aSocket.close();
+		}
 	}
 	
 }
