@@ -22,6 +22,7 @@ public class UDPClient{
 			aHost = InetAddress.getByName(host);   
 			byte[] buffer = new byte[1000];
 			reply = new DatagramPacket(buffer, buffer.length);	
+			aSocket.receive(reply);
 			
 			
 //			aSocket.setSoTimeout(15 * 1000); 15 segundos
@@ -41,9 +42,8 @@ public class UDPClient{
 	 
 	}
 	
-	byte[] getResponse() throws IOException{
-		aSocket.receive(reply);
-		return null;
+	String getResponse() throws IOException{
+		return reply.toString();
 	}
 	
 	void sendRequest(byte[] mensagem) throws IOException{

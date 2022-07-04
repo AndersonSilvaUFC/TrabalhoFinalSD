@@ -25,6 +25,7 @@ public class UDPServer{
 	    try{
 	    	aSocket = new DatagramSocket(6789);
 	    	buffer = new byte[1000];
+	    	
 	 		while(true){
  				request = new DatagramPacket(buffer, buffer.length);
  				reply = new DatagramPacket(request.getData(), 
@@ -35,9 +36,9 @@ public class UDPServer{
 	    } 
 	}
 	
-		public byte[] getRequest() throws IOException {
+		public String getRequest() throws IOException {
 			aSocket.receive(request);
-			return null;
+			return request.toString();
 		}
 		
 		public void sendResponse() throws IOException {
