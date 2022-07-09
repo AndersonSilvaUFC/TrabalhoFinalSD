@@ -13,9 +13,9 @@ public class User {
 	private static void printMenu(){
 		System.out.println("#########################");
 		System.out.println("Selecione uma operação: ");
-		System.out.println("1. Cacular folha de pagamento");
+		System.out.println("1. Calcular folha de pagamento");
 		System.out.println("2. Caclcular bônus de férias");
-		System.out.println("3. Pagar FGTS");
+		System.out.println("3. Calcular FGTS");
 		System.out.println("0. Sair");
 	}
 	
@@ -31,11 +31,11 @@ public class User {
 
 		boolean sair = false;
 		Scanner sc = new Scanner(System.in);
-		String opcao, aux;
+		String opcao;
 		double resposta;
-
+		RHManagerProxy proxy = new RHManagerProxy();
 		while(!sair) {
-			RHManagerProxy proxy = new RHManagerProxy();
+
 			printMenu();
 			opcao = sc.nextLine();
 
@@ -58,8 +58,23 @@ public class User {
 						break;
 					}
 					break;
+				case "3":
+					System.out.println("Selecione o funcionário: ");
+					for(int i=1; i<=funcionarios.size(); i++){
+						System.out.println(i+" - "+funcionarios.get(i-1).getNome());
+					}
+					opcao = sc.nextLine();
+					try {
+						int opcaoInt = Integer.parseInt(opcao);
+						resposta = proxy.calculaFGTS( funcionarios.get(opcaoInt - 1) );
+						System.out.println("FGTS "+ funcionarios.get(opcaoInt-1).getNome() +": "+ resposta);
+					}catch (NumberFormatException e){
+						break;
+					}
+					break;
 				case "0":
 					sair = true;
+					proxy.close();
 					break;
 				default:
 					opcao = "";
@@ -69,5 +84,7 @@ public class User {
 			//proxy.close();
 		}
 	}
+
+
 
 }

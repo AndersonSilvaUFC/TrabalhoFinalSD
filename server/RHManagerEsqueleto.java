@@ -16,7 +16,8 @@ public class RHManagerEsqueleto {
         rhManager= new RHManager();
     }
 
-    public String calculaFolhaDePagamento(String args) throws JSONException{
+    public String calculaFolhaDePagamento(String args) throws JSONException {
+
         JSONArray funcionariosJson = new JSONArray(args);
 
         List<Funcionario> funcionarios = new ArrayList<>();
@@ -61,6 +62,27 @@ public class RHManagerEsqueleto {
         );
 
         double resposta = rhManager.calculaBonusDeFerias(funcionario);
+
+        JSONObject respostaJson = new JSONObject();
+        respostaJson.put("resposta",resposta);
+
+        return respostaJson.toString();
+    }
+
+    public String calculaFGTS(String args) throws JSONException{
+        JSONObject funcionarioJson = new JSONObject(args);
+
+        Funcionario funcionario = new Funcionario(
+                funcionarioJson.getString("nome"),
+                funcionarioJson.getInt("mesesTrabalhados"),
+                funcionarioJson.getDouble("salario"),
+                funcionarioJson.getDouble("fgts"),
+                funcionarioJson.getBoolean("bonusDeFeriasPago"),
+                funcionarioJson.getBoolean("ativo"),
+                funcionarioJson.getBoolean("demitidoJustaCausa")
+        );
+
+        double resposta = rhManager.calculaFGTS(funcionario);
 
         JSONObject respostaJson = new JSONObject();
         respostaJson.put("resposta",resposta);

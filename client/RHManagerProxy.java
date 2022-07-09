@@ -7,11 +7,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 public class RHManagerProxy {
     private UDPClient udpClient;
     private int idAtual = 0;
+    private int limiteRequisicoes = 10;
 
     public RHManagerProxy(){
         this.udpClient = new UDPClient("localhost",6789);
@@ -32,9 +34,9 @@ public class RHManagerProxy {
     }
 
     public double calculaBonusDeFerias(Funcionario funcionario) throws JSONException, IOException{
-        JSONObject obj = new JSONObject(funcionario);
+        JSONObject funionarioJson = new JSONObject(funcionario);
 
-        String args = obj.toString();
+        String args = funionarioJson.toString();
 
         String respostaString = doOperation("RHManager","calculaBonusDeFerias",args);
 
@@ -45,19 +47,47 @@ public class RHManagerProxy {
         return resposta;
     }
 
-    private String doOperation(String objectRef, String methodId, String args) throws JSONException, IOException{
+    public double calculaFGTS(Funcionario funcionario) throws JSONException, IOException{
+        JSONObject funcionarioJson = new JSONObject(funcionario);
 
+        String args = funcionarioJson.toString();
+
+        String respostaString = doOperation("RHManager","calculaFGTS",args);
+
+        JSONObject respObj = new JSONObject(respostaString);
+
+        double resposta = respObj.getDouble("resposta");
+
+        return resposta;
+    }
+
+    private String doOperation(String objectRef, String methodId, String args) throws JSONException, IOException {
+        Message resposta;
         String data = empacotaMenagem(objectRef, methodId, args);
 
-        udpClient.sendRequest(data);
+        while (limiteRequisicoes > 0){
 
-        Message resposta = desempacotaMensagem(udpClient.getResponse());
+            try {
+                resposta = desempacotaMensagem(udpClient.getResponse());
+                //System.out.println(resposta.getId());
 
-        return resposta.getArgs();
+                limiteRequisicoes = 10;
+                return resposta.getArgs();
+            } catch (SocketTimeoutException e) {
+                //System.out.println("Limite: "+limiteRequisicoes);
+                udpClient.sendRequest(data);
+                limiteRequisicoes--;
+            }
+        }
+        //udpClient.getResponse();
+        limiteRequisicoes = 10;
+        JSONObject respostaJson = new JSONObject();
+        respostaJson.put("resposta",-1.0);
+        return respostaJson.toString();
     }
 
     private String empacotaMenagem(String objectRef, String methodId, String args) throws JSONException{
-        Message message = new Message(0,idAtual,objectRef,methodId,args);
+        Message message = new Message(0,idAtual++,objectRef,methodId,args);
 
         JSONObject obj = new JSONObject();
 
@@ -84,5 +114,7 @@ public class RHManagerProxy {
         return message;
     }
 
-
+    public void close(){
+        this.udpClient.close();
+    }
 }

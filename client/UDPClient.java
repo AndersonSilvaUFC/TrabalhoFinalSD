@@ -12,9 +12,10 @@ public class UDPClient {
 	private InetAddress aHost = null;
 	private int Port;
 	private byte[] buffer = new byte[1000];
+
 	
 	
-	public UDPClient(String host,int serverPort){
+	public UDPClient(String host,int serverPort) {
 		
 		try {
 			Port = serverPort;
@@ -22,27 +23,21 @@ public class UDPClient {
 			aHost = InetAddress.getByName(host);   
 			byte[] buffer = new byte[1000];
 			reply = new DatagramPacket(buffer, buffer.length);	
-			
-			
-//			aSocket.setSoTimeout(15 * 1000); 15 segundos
 
-		
-			System.out.println("Reply: " + new String(reply.getData()));	
+			aSocket.setSoTimeout(200);
+
 		} catch (SocketException e){
-			System.out.println("Socket: " + e.getMessage());
+			System.out.println(e.getMessage());
 		} catch (IOException e){
 			System.out.println("IO: " + e.getMessage());
-		} finally {
-			if(aSocket != null) {
-				//aSocket
-				.close();
-			}
 		}
-	 
+
 	}
 	
-	String getResponse() throws IOException{
+	String getResponse() throws IOException, SocketTimeoutException{
+
 		aSocket.receive(reply);
+
 		return new String(reply.getData());
 	}
 	

@@ -1,5 +1,6 @@
 package server;
 
+import model.Message;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,13 +11,12 @@ public class Despachante {
         esqueleto = new RHManagerEsqueleto();
     }
 
-    public String invoke(String message) throws JSONException{
+    public String invoke(Message message) throws JSONException{
         String resposta = "";
-        JSONObject obj = new JSONObject(message);
 
-        String objectRef = obj.getString("objectRef");
-        String methodId = obj.getString("methodId");
-        String args = obj.getString("args");
+        String objectRef = message.getObjectRef();
+        String methodId = message.getMethodId();
+        String args = message.getArgs();
 
         if(objectRef.equals("RHManager")){
             switch (methodId) {
@@ -25,6 +25,9 @@ public class Despachante {
                     break;
                 case "calculaBonusDeFerias":
                     resposta = esqueleto.calculaBonusDeFerias(args);
+                    break;
+                case "calculaFGTS":
+                    resposta = esqueleto.calculaFGTS(args);
                     break;
             }
         }
