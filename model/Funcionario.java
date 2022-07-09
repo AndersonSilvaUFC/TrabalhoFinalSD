@@ -2,7 +2,7 @@ package model;
 
 public class Funcionario {
     private String nome;
-    public int mesesTrabalhados;
+    private int mesesTrabalhados;
     private double salario;
     private double fgts;
     private boolean bonusDeFeriasPago;
