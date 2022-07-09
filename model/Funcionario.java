@@ -1,6 +1,6 @@
 package model;
 
-public class Funcionario{
+public class Funcionario {
     private String nome;
     public int mesesTrabalhados;
     private double salario;

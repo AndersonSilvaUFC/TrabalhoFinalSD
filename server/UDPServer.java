@@ -18,8 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class UDPServer {
-	
-	
+
 	public static void main (String args[]) throws IOException, JSONException {
 		Map<Integer, String> historico = new HashMap<>();
 		DatagramSocket aSocket = null;
@@ -72,7 +71,7 @@ public class UDPServer {
 		    }
 	}
 
-	public static Message desempoacotaRequisicao(String request) throws JSONException{
+	private static Message desempoacotaRequisicao(String request) throws JSONException{
 		JSONObject obj = new JSONObject(request);
 
 		Message message = new Message(
@@ -86,13 +85,13 @@ public class UDPServer {
 		return message;
 	}
 
-	public static byte[] empacotaMensagem(String resultado, int requestId) throws JSONException{
+	private static byte[] empacotaMensagem(String resultado, int requestId) throws JSONException{
 		JSONObject obj = new JSONObject();
 		obj.put("type", 1);
 		obj.put("id", requestId);
 		obj.put("objectRef", "");
 		obj.put("methodId", "");
-		
+
 		if(resultado != null) {
 			obj.put("args", resultado);
 		} else {
